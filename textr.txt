@@ -1,1 +1,2 @@
 prompt(document.domain+" - "+new Date().toISOString().slice(0,10));
+window.alert('hello)
